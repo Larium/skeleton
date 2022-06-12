@@ -1,0 +1,15 @@
+version: "3.1"
+services:
+  webserver:
+    build: .docker/php-apache
+    container_name: ${APP_NAME}
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - ./.docker/php-apache/site.conf:/etc/apache2/sites-enabled/000-default.conf
+      - ./.docker/php-apache/php-ini-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+      - ./.docker/php-apache/xdebug.ini:/usr/local/etc/php/conf.d/15-xdebug.ini
+    ports:
+      - "8080:80"
+    environment:
+      APP_PATH: '/var/www/'
