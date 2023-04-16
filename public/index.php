@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\ServerRequestFactory;
-use Larium\App\Shared\Infrastructure\Http\Middleware\ExceptionMiddleware;
-use Larium\App\Shared\Infrastructure\Provider\DiContainerProvider;
+use Larium\Ui\Http\Middleware\ExceptionMiddleware;
+use Larium\App\Infrastructure\Provider\DiContainerProvider;
 use Larium\Framework\Framework;
 use Larium\Framework\Middleware\ActionResolverMiddleware;
 use Larium\Framework\Middleware\RoutingMiddleware;

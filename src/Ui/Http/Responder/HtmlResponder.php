@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Larium\App\Shared\Infrastructure\Http\Responder;
+namespace Larium\Ui\Http\Responder;
 
 use Throwable;
 use Larium\Bridge\Template\Template;

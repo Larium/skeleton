@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Larium\App\Shared\Infrastructure\Http\Middleware;
+namespace Larium\Ui\Http\Middleware;
 
 use ErrorException;
-use Larium\App\Shared\Infrastructure\Http\Responder\HtmlResponder;
+use Larium\Ui\Http\Responder\HtmlResponder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

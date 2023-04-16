@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Larium\App\Shared\Infrastructure\Provider;
+namespace Larium\App\Infrastructure\Provider;
 
 use DI\ContainerBuilder;
 use Dotenv\Dotenv;
 use FastRoute\RouteCollector;
-use Larium\App\Shared\Infrastructure\Http\Action\HomeAction;
+use Larium\Ui\Http\Action\HomeAction;
 use Larium\Bridge\Template\Template;
 
 use function FastRoute\simpleDispatcher;
@@ -24,7 +24,7 @@ class DiContainerProvider implements ContainerProvider
 {
     public function getContainer(): ContainerInterface
     {
-        (Dotenv::createImmutable(__DIR__ . '/../../../../../'))->load();
+        (Dotenv::createImmutable(__DIR__ . '/../../../../'))->load();
         $builder = new ContainerBuilder();
 
         $builder->addDefinitions([
@@ -36,7 +36,7 @@ class DiContainerProvider implements ContainerProvider
                 return new FastRouteBridge($dispatcher);
             },
             Template::class => function () {
-                $template = new TwigTemplate(__DIR__ . '/../Http/templates');
+                $template = new TwigTemplate(__DIR__ . '/../../../Ui/Http/templates');
                 $template->disableCache();
 
                 return $template;

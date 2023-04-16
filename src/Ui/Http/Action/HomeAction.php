@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Larium\App\Shared\Infrastructure\Http\Action;
+namespace Larium\Ui\Http\Action;
 
-use Larium\App\Shared\Infrastructure\Http\Responder\HtmlResponder;
+use Larium\Ui\Http\Responder\HtmlResponder;
 use Larium\Framework\Http\Action;
 use Larium\Framework\Http\ResponseFactory;
 use Psr\Http\Message\ServerRequestInterface;
