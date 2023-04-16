@@ -1,6 +1,6 @@
 {
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.1",
         "components/jquery": "~3.5",
         "laminas/laminas-diactoros": "^2.8",
         "larium/framework": "^0.0.8",
