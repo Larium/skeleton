@@ -25,7 +25,7 @@ class HtmlResponder
         int $status,
         string $template,
         array $payload = [],
-        Throwable $e = null
+        ?Throwable $e = null
     ): ResponseInterface {
         $payload['e'] = $e;
         $response = (new ResponseFactory())->createResponse($status);
