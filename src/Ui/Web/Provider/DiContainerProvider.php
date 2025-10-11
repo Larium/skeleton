@@ -13,7 +13,7 @@ use FastRoute\RouteCollector;
 use Monolog\Handler\StreamHandler;
 use Larium\Bridge\Template\Template;
 use Larium\Ui\Web\Provider\RouterProvider;
-use Larium\Ui\Web\Provider\ContainerLocator;
+use Larium\Ui\SharedKernel\Service\ContainerLocator;
 use Larium\Ui\Web\Middleware\FirewallMiddleware;
 use Larium\Ui\SharedKernel\Authentication\Firewall;
 use Larium\Ui\SharedKernel\Authentication\AuthenticatorService;

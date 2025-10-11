@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Larium\Ui\Web\Provider;
+namespace Larium\Ui\SharedKernel\Service;
 
 use Psr\Container\ContainerInterface;
 use League\Tactician\Handler\Locator\HandlerLocator;
