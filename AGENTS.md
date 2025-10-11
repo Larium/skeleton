@@ -6,7 +6,7 @@ Purpose: Help an autonomous agent understand and operate the Larium HTTP framewo
 
 ### 1) Runtime Overview
 - App type: Web (PSR-7/PSR-15 HTTP). Entry is `public/web/index.php`.
-- DI Container: PHP-DI via `src/Ui/Web/Provider/DiContainerProvider.php`.
+- DI Container: PHP-DI via `src/Ui/Web/Provider/DiContainerProvider.php` (implements `Larium\Framework\Provider\ContainerProvider`).
 - Router: FastRoute wrapped by `Larium\Framework\Bridge\Routing\FastRouteBridge`.
 - Middleware pipeline:
   1. `ExceptionMiddleware` (outermost)
@@ -25,7 +25,7 @@ What happens per request:
 ---
 
 ### 2) Dependency Injection (DI)
-- Provider: `src/Ui/Web/Provider/DiContainerProvider.php`.
+- Provider: `src/Ui/Web/Provider/DiContainerProvider.php` (implements `Larium\Framework\Provider\ContainerProvider`).
 - Registers:
   - Router (FastRoute dispatcher built from `RouterProvider` routes)
   - Twig Template engine (`Template` abstraction)
@@ -124,7 +124,7 @@ Order matters. Exception → Firewall → Routing → ActionResolver.
 
 ### 10) Key Files Map
 - Entry: `public/web/index.php`
-- DI: `src/Ui/Web/Provider/DiContainerProvider.php`
+- DI: `src/Ui/Web/Provider/DiContainerProvider.php` (implements `Larium\Framework\Provider\ContainerProvider`)
 - Routes: `src/Ui/Web/Provider/RouterProvider.php`
 - Middlewares: `src/Ui/Web/Middleware/*`
 - Responder: `src/Ui/Web/Responder/HtmlResponder.php`
