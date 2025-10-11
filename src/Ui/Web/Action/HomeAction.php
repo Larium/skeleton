@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Larium\Ui\Http\Action;
+namespace Larium\Ui\Web\Action;
 
-use Larium\Ui\Http\Responder\HtmlResponder;
 use Larium\Framework\Http\Action;
-use Larium\Framework\Http\ResponseFactory;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Larium\Ui\Web\Responder\HtmlResponder;
+use Psr\Http\Message\ServerRequestInterface;
 
 class HomeAction implements Action
 {

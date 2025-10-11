@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Client Error</title>
+        <link href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Condensed:100,200,300,400" rel="stylesheet">
+        <style type="text/css">
+:root {
+  --main-color: #eaeaea;
+  --stroke-color: black;
+}
+body {
+  background: var(--main-color);
+}
+h1 {
+  margin: 100px auto 0 auto;
+  color: var(--stroke-color);
+  font-family: 'Encode Sans Semi Condensed', Verdana, sans-serif;
+  font-size: 10rem; line-height: 10rem;
+  font-weight: 200;
+  text-align: center;
+}
+h2 {
+  margin: 20px auto 30px auto;
+  font-family: 'Encode Sans Semi Condensed', Verdana, sans-serif;
+  font-size: 1.5rem; line-height: 1.5rem;
+  font-weight: 400;
+  text-align: center;
+}
+h1, h2 {
+  -webkit-transition: opacity 0.5s linear, margin-top 0.5s linear;
+  transition: opacity 0.5s linear, margin-top 0.5s linear;
+}
+h1 span, h2 span {
+  font-weight: 200;
+}
+#errorbox {
+  margin: 50px auto 20px auto;
+  max-width: 600px;
+  text-align: center;
+  font-family: 'Encode Sans Semi Condensed', Verdana, sans-serif;
+}
+@media (max-width: 300px) {
+  h1 {
+    font-size: 2rem;
+    line-height: 2rem;
+  }
+  h2 {
+    font-size: 1rem;
+    line-height: 1rem;
+  }
+}
+        </style>
+    </head>
+    <body>
+        <h1>4<span>0</span>4</h1>
+        <h2>Client Error</h2>
+        <div id="errorbox">
+            {% if error.message is defined %}
+                <p>{{ error.message }}</p>
+            {% else %}
+                <p>The request could not be completed due to a client error.</p>
+            {% endif %}
+            
+            {% if error.invalidParams is defined and error.invalidParams is not empty %}
+                <h3>Validation Errors:</h3>
+                <ul>
+                    {% for param in error.invalidParams %}
+                        <li><strong>{{ param.name }}</strong>: {{ param.reason }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
+            <p><a href="/">Return to Home</a></p>
+        </div>
+    </body>
+</html>

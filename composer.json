@@ -5,11 +5,13 @@
         "laminas/laminas-diactoros": "^3.0",
         "larium/framework": "^1.0.2",
         "larium/template-bridge": "^0.0.1",
+        "league/tactician": "*",
         "monolog/monolog": "^3.9",
         "nikic/fast-route": "^1.3",
         "php-di/php-di": "^7.1",
         "psr/log": "^2.0|^3.0",
-        "twbs/bootstrap": "~4.6.0",
+        "symfony/validator": "^7.3",
+        "twbs/bootstrap": "^5.0",
         "twig/twig": "^3.21",
         "vlucas/phpdotenv": "^5.6"
     },
@@ -31,9 +33,9 @@
     },
     "scripts": {
         "update-assets": [
-            "cp vendor/components/jquery/jquery.min.js public/js/vendor/",
-            "cp vendor/twbs/bootstrap/dist/js/bootstrap.min.js public/js/vendor/",
-            "cp vendor/twbs/bootstrap/dist/css/bootstrap.min.css public/css/vendor/"
+            "cp vendor/components/jquery/jquery.min.js public/web/js/vendor/",
+            "cp vendor/twbs/bootstrap/dist/js/bootstrap.min.js public/web/js/vendor/",
+            "cp vendor/twbs/bootstrap/dist/css/bootstrap.min.css public/web/css/vendor/"
         ],
         "post-update-cmd": "@update-assets",
         "post-install-cmd": [
