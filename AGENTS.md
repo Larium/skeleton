@@ -79,7 +79,15 @@ Order matters. Exception → Firewall → Routing → ActionResolver.
   - `Firewall` maps regex patterns to authenticator service ids (defined in DI).
   - **Admin-only**: Authentication is for admin changes only, not user-specific authentication.
   - **Predefined types**: JWT, shared-key, basic-auth (configured in `.env.dist`).
-- Validation: `Service/ValidationService.php` throws `ValidationException` with structured errors.
+- Validation: `Service/Validation/ValidationService.php` throws `ValidationException` with structured errors.
+  - Uses Symfony Validator: `validate(object $object, array $context = [])` throws `ValidationException` with field-level errors.
+  - `ValidationException::badRequest(array $errors)` creates 400-level exception with `['reason' => $message, 'name' => $propertyPath]` structure.
+  - `JsonIntegrityValidation` validates JSON syntax and returns decoded array, throws `ValidationException` on parse errors.
+- Request Object Provider: `Service/RequestObjectProvider.php` maps HTTP requests to DTOs.
+  - `provide(ServerRequestInterface $request, string $className, array $validationContext): object` auto-detects content type.
+  - Supports JSON (`application/json`) and form data (parsed body).
+  - Merges query parameters with body (body values override query on conflicts).
+  - Handles validation context for DTO validation rules.
 - CommandBus (CQS):
   - Tactician `CommandBus` registered in DI with middleware pipeline:
     - `CommandHandlerMiddleware(ClassNameExtractor, ContainerLocator, HandleInflector)`
@@ -111,6 +119,11 @@ Order matters. Exception → Firewall → Routing → ActionResolver.
   3) Get `CommandBus` from the container, call `handle(new DoXCommand(...))`.
 - Add a service:
   - Define in `DiContainerProvider::getContainer()` via `$builder->addDefinitions([...])`.
+- Map request data to a DTO:
+  1) Create a DTO class with properties and validation attributes (Symfony Validator).
+  2) In your Action, inject `RequestObjectProvider`.
+  3) Call `$provider->provide($request, MyDto::class, ['validation_context'])`.
+  4) The provider auto-detects JSON vs form data, merges query+body, validates, and returns the DTO.
 
 ---
 
@@ -130,6 +143,8 @@ Order matters. Exception → Firewall → Routing → ActionResolver.
 - Responder: `src/Ui/Web/Responder/HtmlResponder.php`
 - Templates: `src/Ui/Web/templates/*`
 - SharedKernel: `src/Ui/SharedKernel/*`
+- Request Object Provider: `src/Ui/SharedKernel/Service/RequestObjectProvider.php`
+- Validation Services: `src/Ui/SharedKernel/Service/Validation/*`
 - CommandBus Locator: `src/Ui/SharedKernel/Service/ContainerLocator.php`
 
 This guide is optimized for automation: the agent should be able to add routes, actions, services, auth rules, and commands by editing the files listed above, keeping middleware order and DI registrations intact.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Larium\Ui\SharedKernel\Exception;
+namespace Larium\Ui\SharedKernel\Service\Validation;
 
 use InvalidArgumentException;
 

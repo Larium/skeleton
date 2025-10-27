@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Larium\Ui\SharedKernel\Service;
+namespace Larium\Ui\SharedKernel\Service\Validation;
 
-use Larium\Ui\SharedKernel\Exception\ValidationException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidationService
