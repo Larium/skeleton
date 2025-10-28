@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Larium\Ui\Web\Provider;
+namespace Larium\Ui\Api\Provider;
 
 use FastRoute\RouteCollector;
-use Larium\Ui\Web\Action\HomeAction;
+use Larium\Ui\Api\Action\HomeAction;
 
 class RouterProvider
 {
@@ -15,3 +15,4 @@ class RouterProvider
         // Add more routes as needed
     }
 }
+

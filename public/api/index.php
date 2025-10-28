@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\ServerRequestFactory;
-use Larium\Ui\Web\Middleware\ExceptionMiddleware;
+use Larium\Ui\Api\Middleware\ExceptionMiddleware;
 use Larium\Ui\SharedKernel\Middleware\FirewallMiddleware;
-use Larium\Ui\Web\Provider\DiContainerProvider;
+use Larium\Ui\Api\Provider\DiContainerProvider;
 use Larium\Framework\Framework;
 use Larium\Framework\Middleware\ActionResolverMiddleware;
 use Larium\Framework\Middleware\RoutingMiddleware;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 (function () {
     $containerProvider = new DiContainerProvider();
@@ -25,3 +25,4 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
     $f->run(ServerRequestFactory::fromGlobals());
 })();
+

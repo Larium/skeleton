@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Larium\Ui\Web\Middleware;
+namespace Larium\Ui\SharedKernel\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -31,3 +31,4 @@ class FirewallMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 }
+

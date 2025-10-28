@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Larium\Ui\Web\Middleware;
+namespace Larium\Ui\Api\Middleware;
 
 use Throwable;
 use ErrorException;
 use Psr\Log\LoggerInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
-use Larium\Ui\Web\Responder\HtmlResponder;
+use Larium\Ui\Api\Responder\JsonResponder;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Larium\Ui\SharedKernel\Error\ExceptionErrorMapper;
@@ -18,8 +17,8 @@ use Larium\Ui\SharedKernel\Error\ExceptionErrorMapper;
 final class ExceptionMiddleware implements MiddlewareInterface
 {
     public function __construct(
+        private readonly JsonResponder $responder,
         private readonly LoggerInterface $logger,
-        private readonly HtmlResponder $htmlResponder,
         private readonly ExceptionErrorMapper $errorMapper
     ) {
         set_error_handler(function ($errno, $errstr, $errfile, $errline) {
@@ -36,18 +35,7 @@ final class ExceptionMiddleware implements MiddlewareInterface
             if ($status >= 500) {
                 $this->logger->error($e->__toString());
             }
-            return $this->getResponse($request, $status, $payload, $e);
+            return $this->responder->getResponse($payload, $status);
         }
-    }
-
-    private function getResponse(RequestInterface $request, int $status, array $payload = [], ?Throwable $e = null): ResponseInterface
-    {
-        $map = [400 => '4xx', 401 => '4xx', 404 => '4xx', 405 => '4xx',
-                500 => '5xx', 502 => '5xx'];
-        $payload['request'] = $request;
-        $templateStatus = array_key_exists($status, $map) ? $map[$status] : substr(strval($status), 0, 1) . 'xx';
-        $template = sprintf("errors/%s.html.twig", $templateStatus);
-
-        return $this->htmlResponder->getResponse($status, $template, $payload, $e);
     }
 }
