@@ -10,7 +10,7 @@ use function json_last_error_msg;
 
 class JsonIntegrityValidation
 {
-    public function validate(string $content = null): array
+    public function validate(?string $content = null): array
     {
         $data = json_decode($content, true);
         if ($data === null) {
