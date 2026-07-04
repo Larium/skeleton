@@ -18,6 +18,8 @@ use Larium\Ui\SharedKernel\Authentication\Firewall;
 use Larium\Ui\SharedKernel\Authentication\AuthenticatorService;
 use Larium\Ui\SharedKernel\Authentication\CredentialCollector;
 use Larium\Ui\SharedKernel\Error\ExceptionErrorMapper;
+use Larium\Ui\SharedKernel\Service\RequestParser\BodyParserInterface;
+use Larium\Ui\SharedKernel\Service\RequestParser\JsonBodyParser;
 use League\Tactician\CommandBus;
 use League\Tactician\Handler\CommandHandlerMiddleware;
 use League\Tactician\Handler\MethodNameInflector\HandleInflector;
@@ -77,6 +79,7 @@ class DiContainerProvider implements ContainerProvider
                     '/^\/secure/' => 'userAuthentication',
                 ]);
             },
+            BodyParserInterface::class => JsonBodyParser::class,
         ]);
 
         return $builder->build();

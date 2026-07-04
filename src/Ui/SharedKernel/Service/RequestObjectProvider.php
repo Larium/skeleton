@@ -6,15 +6,17 @@ namespace Larium\Ui\SharedKernel\Service;
 
 use AutoMapperPlus\DataType;
 use AutoMapperPlus\AutoMapperInterface;
-use Larium\Ui\SharedKernel\Service\Validation\JsonIntegrityValidation;
-use Larium\Ui\SharedKernel\Service\Validation\ValidationService;
 use Psr\Http\Message\ServerRequestInterface;
+use Larium\Ui\SharedKernel\Service\Validation\ValidationService;
+use Larium\Ui\SharedKernel\Service\RequestParser\BodyParserInterface;
+use Larium\Ui\SharedKernel\Service\RequestParser\UnsupportedContentTypeException;
 
 class RequestObjectProvider
 {
     public function __construct(
         private readonly AutoMapperInterface $mapper,
         private readonly ValidationService $validation,
+        private readonly BodyParserInterface $bodyParser,
     ) {
 
     }
@@ -26,7 +28,11 @@ class RequestObjectProvider
      */
     public function provide(ServerRequestInterface $request, string $className, array $validationContext): object
     {
-        $body = $this->extractBodyData($request);
+        if (!$this->bodyParser->supports($request)) {
+            throw new UnsupportedContentTypeException('Content type is not supported');
+        }
+
+        $body = $this->bodyParser->parse($request->getBody()->__toString());
         $data = array_merge($request->getQueryParams() ?? [], $body);
 
         $this->ensureArrayMapping($className);
@@ -36,28 +42,11 @@ class RequestObjectProvider
         return $dto;
     }
 
-    private function extractBodyData(ServerRequestInterface $request): array
-    {
-        $parsed = $request->getParsedBody();
-        if (is_array($parsed)) {
-            return $parsed;
-        }
-
-        return $this->isJson($request)
-            ? (new JsonIntegrityValidation())->validate((string) $request->getBody())
-            : [];
-    }
-
     private function ensureArrayMapping(string $className): void
     {
         $config = $this->mapper->getConfiguration();
         if (!$config->hasMappingFor(DataType::ARRAY, $className)) {
             $config->registerMapping(DataType::ARRAY, $className);
         }
-    }
-
-    private function isJson(ServerRequestInterface $request): bool
-    {
-        return str_contains(strtolower($request->getHeaderLine('Content-Type')), 'application/json');
     }
 }

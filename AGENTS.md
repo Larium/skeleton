@@ -100,10 +100,14 @@ Order matters. Exception → Firewall → Routing → ActionResolver.
   - `ValidationException::badRequest(array $errors)` creates 400-level exception with `['reason' => $message, 'name' => $propertyPath]` structure.
   - `JsonIntegrityValidation` validates JSON syntax and returns decoded array, throws `ValidationException` on parse errors.
 - **Request Object Provider**: `Service/RequestObjectProvider.php` maps HTTP requests to DTOs.
-  - `provide(ServerRequestInterface $request, string $className, array $validationContext): object` auto-detects content type.
-  - Supports JSON (`application/json`) and form data (parsed body).
-  - Merges query parameters with body (body values override query on conflicts).
-  - Handles validation context for DTO validation rules.
+  - `provide(ServerRequestInterface $request, string $className, array $validationContext): object`
+  - **Body parsers** (`Service/RequestParser/`):
+    - `BodyParserInterface`: `supports(ServerRequestInterface)` checks content type; `parse(string $body): array` returns decoded body data.
+    - `JsonBodyParser`: handles `application/json`; delegates JSON syntax validation to `JsonIntegrityValidation`.
+    - `UnsupportedContentTypeException`: thrown when the configured parser does not support the request content type.
+  - **DI**: bind `BodyParserInterface` to the default implementation in each interface's `DiContainerProvider` (e.g. `JsonBodyParser` for Api). `RequestObjectProvider` receives the parser via constructor injection. Override the binding to swap the default parser for an entire application.
+  - Merges query parameters with parsed body (body values override query on conflicts).
+  - Maps merged data to DTO via AutoMapper (registers array→DTO mapping if needed), then validates with `ValidationService`.
 - **CommandBus (CQS)**:
   - Tactician `CommandBus` registered in DI with middleware pipeline:
     - `CommandHandlerMiddleware(ClassNameExtractor, ContainerLocator, HandleInflector)`
@@ -144,9 +148,10 @@ Order matters. Exception → Firewall → Routing → ActionResolver.
   - Each interface's DI container is independent.
 - **Map request data to a DTO**:
   1) Create a DTO class with properties and validation attributes (Symfony Validator).
-  2) In your Action, inject `RequestObjectProvider` from SharedKernel.
-  3) Call `$provider->provide($request, MyDto::class, ['validation_context'])`.
-  4) The provider auto-detects JSON vs form data, merges query+body, validates, and returns the DTO.
+  2) Register `BodyParserInterface` → default parser in the interface's `DiContainerProvider` (e.g. `JsonBodyParser::class` for Api).
+  3) In your Action constructor, inject `RequestObjectProvider`.
+  4) Call `$this->provider->provide($request, MyDto::class, ['validation_context'])`.
+  5) To support a new content type, implement `BodyParserInterface` and update the `BodyParserInterface` binding in `DiContainerProvider`.
 
 ---
 
@@ -182,6 +187,7 @@ Order matters. Exception → Firewall → Routing → ActionResolver.
 - Middleware: `src/Ui/SharedKernel/Middleware/FirewallMiddleware.php`
 - Error: `src/Ui/SharedKernel/Error/ExceptionErrorMapper.php`
 - Request Object Provider: `src/Ui/SharedKernel/Service/RequestObjectProvider.php`
+- Request Parsers: `src/Ui/SharedKernel/Service/RequestParser/*`
 - Validation Services: `src/Ui/SharedKernel/Service/Validation/*`
 - CommandBus Locator: `src/Ui/SharedKernel/Service/ContainerLocator.php`
 - Authentication: `src/Ui/SharedKernel/Authentication/*`
