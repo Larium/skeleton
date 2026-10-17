@@ -12,19 +12,27 @@ Purpose: Help an autonomous agent understand and operate the Larium HTTP framewo
   - Web: `src/Ui/Web/Provider/DiContainerProvider.php`
   - Api: `src/Ui/Api/Provider/DiContainerProvider.php`
 - **Router**: FastRoute wrapped by `Larium\Framework\Bridge\Routing\FastRouteBridge`.
-- **Middleware pipeline** (same for both applications):
-  1. `ExceptionMiddleware` (outermost) - interface-specific
-  2. `FirewallMiddleware` (auth by route patterns) - shared
-  3. `RoutingMiddleware` - framework
-  4. `ActionResolverMiddleware` (innermost) - framework
+- **Middleware pipeline**:
+  - Web:
+    1. `ExceptionMiddleware` (outermost)
+    2. Storageless `SessionMiddleware` (`SessionMiddlewareFactory`)
+    3. `FirewallMiddleware` (auth by route patterns)
+    4. `RoutingMiddleware`
+    5. `ActionResolverMiddleware` (innermost)
+  - Api:
+    1. `ExceptionMiddleware` (outermost)
+    2. `FirewallMiddleware` (auth by route patterns)
+    3. `RoutingMiddleware`
+    4. `ActionResolverMiddleware` (innermost)
 - **Views**: Twig via `HtmlResponder` (Web), JSON via `JsonResponder` (Api).
 
 What happens per request:
 1. Front controller bootstraps container and framework, wires middleware order.
 2. `ExceptionMiddleware` guards everything, normalizes errors to HTML (4xx/5xx).
-3. `FirewallMiddleware` checks path against configured patterns and applies authenticator service if needed; attaches `user` to request attributes.
-4. Router matches path and HTTP method to an Action class.
-5. Action executes (CQS-friendly), typically delegates rendering to `HtmlResponder`.
+3. On the web app, `SessionMiddleware` reads and writes the `slsession` cookie and attaches the session to the request attribute `session`.
+4. `FirewallMiddleware` checks path against configured patterns and applies authenticator service if needed; attaches `user` to request attributes.
+5. Router matches path and HTTP method to an Action class.
+6. Action executes (CQS-friendly), typically delegates rendering to `HtmlResponder`.
 
 ---
 
@@ -59,6 +67,11 @@ Key factories:
   - Api: `src/Ui/Api/Middleware/ExceptionMiddleware.php` - catches all exceptions, returns JSON.
   - Both delegate to `ExceptionErrorMapper` (`src/Ui/SharedKernel/Error/ExceptionErrorMapper.php`) for centralized exception-to-status/payload mapping.
   - Logs unexpected errors (status >= 500).
+- `SessionMiddleware` (Web only, built by `src/Ui/Web/Middleware/SessionMiddlewareFactory.php`):
+  - JWT cookie session from `psr7-sessions/storageless`. No server-side session store.
+  - Cookie name `slsession`, `HttpOnly`, `SameSite=Lax`, `Path=/`. `Secure` is off when `APP_ENV=development`.
+  - Signed with `SYMMETRIC_KEY`. Idle timeout is 12 hours (`43200` seconds); the cookie refreshes after 60 seconds.
+  - Session object is request attribute `SessionMiddleware::SESSION_ATTRIBUTE` (`session`).
 - `FirewallMiddleware` (`src/Ui/SharedKernel/Middleware/FirewallMiddleware.php`):
   - Uses `SharedKernel\Authentication\Firewall` to map URL regex patterns → authenticator service ids.
   - If a path matches, invokes the authenticator service with the request.
@@ -69,7 +82,7 @@ Key factories:
   - `RoutingMiddleware` matches the route.
   - `ActionResolverMiddleware` resolves the Action from DI and invokes it.
 
-Order matters. Exception → Firewall → Routing → ActionResolver.
+Order matters. Web: Exception → Session → Firewall → Routing → ActionResolver. Api: Exception → Firewall → Routing → ActionResolver.
 
 ---
 
@@ -118,7 +131,8 @@ Order matters. Exception → Firewall → Routing → ActionResolver.
 ### 7) Environment and Configuration
 - `.env` loaded in `DiContainerProvider` via `vlucas/phpdotenv`.
 - Important keys:
-  - `APP_NAME`, `APP_ENV` (controls logger level, etc.)
+  - `APP_NAME`, `APP_ENV` (controls logger level, and whether the session cookie is `Secure`)
+  - `SYMMETRIC_KEY` signs the web session cookie (at least 32 bytes)
   - Admin authentication secrets/keys for JWT, shared-key, basic-auth (see `.env.dist`)
 - Assets copied via composer scripts to `public/web/*/vendor`.
 
